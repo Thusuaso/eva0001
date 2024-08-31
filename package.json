@@ -1,0 +1,28 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.5.4",
+    "@primevue/themes": "^4.0.4",
+    "chart.js": "^4.4.4",
+    "mssql": "^11.0.1",
+    "nuxt": "^3.13.0",
+    "pinia": "^2.2.2",
+    "primevue": "^4.0.4",
+    "socket.io-client": "^4.7.5",
+    "vue": "latest"
+  },
+  "devDependencies": {
+    "@primevue/nuxt-module": "^4.0.4",
+    "@types/mssql": "^9.1.5",
+    "usebootstrap": "^3.5.31"
+  }
+}

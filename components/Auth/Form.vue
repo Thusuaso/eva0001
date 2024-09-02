@@ -19,6 +19,7 @@ const toast = useToast();
 const tokenCookie = useCookie('goz_mekmar_auth_token');
 const userCookie = useCookie('goz_mekmar_user');
 const mailCookie = useCookie('goz_mekmar_mail');
+const userIdCookie = useCookie('goz_mekmar_user_id');
 const store = useAuthStore();
 
 
@@ -67,6 +68,7 @@ const login = async ()=>{
         tokenCookie.value = response.value.token;
         userCookie.value = response.value.user;
         mailCookie.value = response.value.mail;
+        userIdCookie.value = response.value.user_id
         store.setAuthToken(response.value.token);
         store.setUser(response.value);
         toast.add({ severity: 'success', summary: 'Login Status', detail: 'successful', life: 3000 });

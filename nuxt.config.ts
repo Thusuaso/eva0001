@@ -5,7 +5,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules:['@primevue/nuxt-module', 'usebootstrap', '@pinia/nuxt'],
   plugins:[
-    '~/plugins/format-price-usd.ts'
+    '~/plugins/format-price-usd.ts',
+    '~/plugins/format-decimal.ts',
+    '~/plugins/date-to-string',
+    '~/plugins/string-to-date'
   ],
   primevue: {
     options: {
@@ -14,7 +17,7 @@ export default defineNuxtConfig({
         }
     }
     },
-    css:['~/assets/css/default.css'],
+    css:['~/assets/css/default.css','primeicons/primeicons.css'],
     "overrides": {
   "vue": "latest"
 }

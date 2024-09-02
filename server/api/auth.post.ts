@@ -18,7 +18,8 @@ export default defineEventHandler( async(event)=>{
                         'status':true,
                         'token':Math.random().toString(36).substr(2),
                         'user':auth.recordset[0].KullaniciAdi,
-                        'mail':auth.recordset[0].MailAdres
+                        'mail':auth.recordset[0].MailAdres,
+                        'user_id':auth.recordset[0].ID
                     }
                     resolve(data);
                 }else{

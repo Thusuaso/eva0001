@@ -1,5 +1,5 @@
 export default defineNuxtPlugin((nuxtApp)=>{
-    nuxtApp.provide('formatPriceUsd',(price:any)=>{
+    nuxtApp.provide('usd',(price:any)=>{
         if(price == null || price == undefined){
             return '$0';
         }else{

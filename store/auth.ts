@@ -5,7 +5,8 @@ export const useAuthStore = defineStore('auth',{
         return{
             auth_token:null,
             username:null,
-            mail:null
+            mail:null,
+            userId:null
         }
     },
     actions:{
@@ -15,6 +16,7 @@ export const useAuthStore = defineStore('auth',{
         setUser(payload:any){
             this.username = payload.user;
             this.mail = payload.mail;
+            this.userId = payload.user_id
         }
     },
     getters:{
@@ -26,6 +28,9 @@ export const useAuthStore = defineStore('auth',{
         },
         getMail(state){
             return state.mail;
+        },
+        getUserId(state){
+            return state.userId;
         }
     }
 })

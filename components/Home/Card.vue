@@ -8,7 +8,7 @@
                     <div class="col mr-2">
                         <div class="text-primary mb-1">{{ title_1 }}</div>
                         <div class="h6 mb-0 text-gray-800">
-                            {{ nuxtApp.$formatPriceUsd(month) }}
+                            {{ nuxtApp.$usd(month) }}
                         </div>
                     </div>
                         <div class="col-auto">
@@ -27,7 +27,7 @@
                     <div class="col mr-2">
                         <div class="text-primary mb-1">{{ title_2 }}</div>
                         <div class="h6 mb-0 text-gray-800">
-                            {{ nuxtApp.$formatPriceUsd(year) }}
+                            {{ nuxtApp.$usd(year) }}
                         </div>
                     </div>
                         <div class="col-auto">
@@ -46,7 +46,7 @@
                     <div class="col mr-2">
                         <div class="text-primary mb-1">{{ title_3 }}</div>
                         <div class="h6 mb-0 text-gray-800">
-                            {{ nuxtApp.$formatPriceUsd(average) }}
+                            {{ nuxtApp.$usd(average) }}
                         </div>
                     </div>
                         <div class="col-auto">
@@ -65,7 +65,7 @@
                     <div class="col mr-2">
                         <div class="text-primary mb-1">{{ title_4 }}</div>
                         <div class="h6 mb-0 text-gray-800">
-                            {{ nuxtApp.$formatPriceUsd(forecast) }}
+                            {{ nuxtApp.$usd(forecast) }}
                         </div>
                     </div>
                         <div class="col-auto">

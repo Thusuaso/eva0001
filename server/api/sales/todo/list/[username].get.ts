@@ -1,7 +1,7 @@
 import mssql from '~/mssql/api';
 
 export default defineEventHandler(async(event)=>{
-    const params = await readBody(event);
+    const username = await getRouterParam(event,'username');
     const todoSql = `
                 select 
 
@@ -18,7 +18,7 @@ export default defineEventHandler(async(event)=>{
                     y.OrtakGorev
 
                 from Yapilacaklar y
-                where y.Yapildi=0 and y.OrtakGorev LIKE '%' + '${params.username}' +  '%' 
+                where y.Yapildi=0 and y.OrtakGorev LIKE '%' + '${username}' +  '%' 
                 order by y.GirisTarihi desc
     `;
     return new Promise(async(resolve,reject)=>{

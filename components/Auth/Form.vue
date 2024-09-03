@@ -15,13 +15,14 @@
 <script lang="ts" setup>
 import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '~/store/auth';
+import { useTodoStore } from '~/store/todo';
 const toast = useToast();
 const tokenCookie = useCookie('goz_mekmar_auth_token');
 const userCookie = useCookie('goz_mekmar_user');
 const mailCookie = useCookie('goz_mekmar_mail');
 const userIdCookie = useCookie('goz_mekmar_user_id');
 const store = useAuthStore();
-
+const todoStore = useTodoStore();
 
 const props = defineProps({
     model:{
@@ -57,8 +58,6 @@ const loginPasswordInput = (event:any)=>{
         password_invalid.value = true;
     }
 };
-
-
 const login = async ()=>{
     const { data:response } = await useFetch('/api/auth',{
         method:'POST',
@@ -69,6 +68,14 @@ const login = async ()=>{
         userCookie.value = response.value.user;
         mailCookie.value = response.value.mail;
         userIdCookie.value = response.value.user_id
+        const { data:todo } = await useFetch(`/api/sales/todo/list/${response?.value?.user}`);
+        if(todo.error){
+            toast.add({ severity: 'error', summary: 'Loading', detail: 'failed', life: 3000 });
+        }else{
+            await todoStore.setTodoList(todo.value.todo);
+        }
+
+
         store.setAuthToken(response.value.token);
         store.setUser(response.value);
         toast.add({ severity: 'success', summary: 'Login Status', detail: 'successful', life: 3000 });
@@ -78,4 +85,10 @@ const login = async ()=>{
     }
 
 };
+
+
+
+
+
+
 </script>

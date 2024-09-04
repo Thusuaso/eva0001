@@ -1,7 +1,11 @@
 <template>
     <DataTable :value="cards" paginator :rows="20" tableStyle="min-width: 50rem"
-    v-model:filters="filters"
-    filterDisplay="row"
+      v-model:filters="filters"
+      filterDisplay="row"
+      selectionMode="single"
+      v-model:selection="selectedCard"
+      @row-click="cardSelected($event)"
+      sortField="ID" :sortOrder="-1"
     
     >
         <Column field="ID" header="ID" :showClearButton="false" :showFilterMenu="false" :showFilterOperator="false">
@@ -65,6 +69,12 @@ const filters = ref({
     Kenar: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 
 
-})
+});
+const selectedCard = ref();
+
+const emit = defineEmits(['selected_card_emit'])
+const cardSelected = (event:any)=>{
+  emit('selected_card_emit',event.data);
+};
 
 </script>

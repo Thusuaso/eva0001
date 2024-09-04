@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
     const toast = useToast();
-    const { data:orders } = await useFetch('/api/orders/onhold');
+    const { data:orders } = await useFetch('/api/orders/list/onhold');
     if(orders.error){
         toast.add({ severity: 'error', summary: 'Loading', detail: 'failed', life: 3000 });
     }

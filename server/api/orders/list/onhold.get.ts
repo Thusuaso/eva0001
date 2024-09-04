@@ -8,6 +8,7 @@ export default defineEventHandler(async ()=>{
         s.SiparisNo,
 TRIM(STR(DAY(s.SiparisTarihi))) + '-' + TRIM(STR(MONTH(s.SiparisTarihi))) + '-' + TRIM(STR(YEAR(s.SiparisTarihi)))  as SiparisTarihi,        s.OdemeTurID,
         ot.OdemeTur,
+        s.OdemeTurID,
         s.TeslimTurID,
         stt.TeslimTur,
         s.MusteriID,

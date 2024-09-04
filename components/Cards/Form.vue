@@ -19,19 +19,42 @@
             </FloatLabel>
         </div>
     </div>
-    <div class="row m-auto text-center">
+    <div class="row m-auto text-center mt-4">
         <div class="col-sm-4">
+            <FloatLabel>
+                <AutoComplete v-model="selectedWidth" inputId="width" :suggestions="filteredWidths" optionLabel="En" @complete="searchWidths($event)" @item-select="widthSelected($event)" @input="widthInput($event)"/>
+                <label for="width">Width</label>
+            </FloatLabel>
+        </div>
+        <div class="col-sm-4">
+            <FloatLabel>
+                <AutoComplete v-model="selectedHeight" inputId="height" :suggestions="filteredHeights" optionLabel="Boy" @complete="searchHeights($event)" @item-select="heightSelected($event)" @input="heightInput($event)"/>
+                <label for="height">Height</label>
+            </FloatLabel>
+        </div>
+        <div class="col-sm-4">
+            <FloatLabel>
+                <AutoComplete v-model="selectedThickness" inputId="thickness" :suggestions="filteredThicknesses" optionLabel="Kenar" @complete="searchThicknesses($event)" @item-select="thicknessSelected($event)" @input="thicknessInput($event)"/>
+                <label for="thickness">Thickness</label>
+            </FloatLabel>
+        </div>
+    </div>
+    <div class="row m-auto text-center mt-4">
+        <div  :class="status ? 'col-sm-12':'col-sm-6'">
+            <Button type="button" :label="status ? 'Save':'Update'" class="p-button-success w-100" @click="process"/>
+        </div>
+        <div :class="!status ? 'col-sm-6':''" v-if="!status">
+            <Button type="button" label="Delete" class="p-button-danger w-100" @click="deleted"/>
+        </div>
 
-        </div>
-        <div class="col-sm-4">
-            
-        </div>
-        <div class="col-sm-4">
-            
-        </div>
     </div>
 </template>
 <script setup lang="ts">
+    import { useCardsStore } from '~/store/cards';
+    import SocketConnection from '@/io';
+    const toast = useToast();
+    const cardStore = useCardsStore();
+    const emit  = defineEmits(['card_dialog_closed']);
     const props = defineProps({
         model:{
             type:Object,
@@ -78,7 +101,7 @@
     };
     const categoryInput = (event:any)=>{
         model.KategoriID = 0;
-        model.KategoriAdi = event;
+        model.KategoriAdi = event.target._value;
     };
 
     let selectedProduct = ref();
@@ -100,7 +123,7 @@
     }
     const productInput = (event:any)=>{
         model.UrunID = 0;
-        model.UrunAdi = event;
+        model.UrunAdi = event.target._value;
     };
 
     let selectedSurface = ref();
@@ -122,7 +145,157 @@
     };
     const surfaceInput = (event:any)=>{
         model.YuzeyIslemID = 0;
-        model.YuzeyIslemAdi = event;
+        model.YuzeyIslemAdi = event.target._value;
     };
+
+    let selectedWidth = ref();
+    let filteredWidths = ref();
+    const searchWidths = (event:any)=>{
+        let res = [];
+        if(event.query.length === 0){
+            res = sizes;
+        } else{
+            res = sizes.filter(x=>{
+                return x.En.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+        };
+        filteredWidths.value = res;
+    };
+    const widthSelected = (event:any)=>{
+        model.En = event.value.En;
+    };
+    const widthInput = (event:any)=>{
+        model.En = event.target._value;
+    };
+
+    let selectedHeight = ref();
+    let filteredHeights = ref();
+    const searchHeights = (event:any)=>{
+        let res = [];
+        if(event.query.length === 0){
+            res = sizes;
+        } else{
+            res = sizes.filter(x=>{
+                return x.Boy.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+        };
+        filteredHeights.value = res;
+    };
+    const heightSelected = (event:any)=>{
+        model.Boy = event.value.Boy;
+    };
+    const heightInput = (event:any)=>{
+        model.Boy = event.target._value;
+    };
+
+    let selectedThickness = ref();
+    let filteredThicknesses = ref();
+    const searchThicknesses = (event:any)=>{
+        let res = [];
+        if(event.query.length === 0){
+            res = sizes;
+        } else{
+            res = sizes.filter(x=>{
+                return x.Kenar.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+        };
+        filteredThicknesses.value = res;
+    };
+    const thicknessSelected = (event:any)=>{
+        model.Kenar = event.value.Kenar;
+    };
+    const thicknessInput = (event:any)=>{
+        model.Kenar = event.target._value;
+    };
+
+    const process = ()=>{
+        if(status){
+            save();
+        }else{
+            update();
+        }
+    };
+    const save = async () =>{
+        const { data:card } = await useFetch('/api/cards/process/save',{
+            method:'POST',
+            body:model
+        });
+        if(card?.value?.error){
+            toast.add({severity:'error',summary:'Cards',detail:'An error has occurred.',life:3000});
+        }else{
+            if(card?.value?.status){
+                toast.add({severity:'success',summary:'Cards',detail:'The card has been saved.',life:3000});
+                cardStore.addCard({...model,'ID':card?.value?.id,'OlcuID':card?.value?.sizeID});
+                emit('card_dialog_closed');
+                /*Socket IO */
+                const socket = new SocketConnection();
+                socket.socket?.emit('cards_list_updated_emit');
+                /*Socket IO */
+                reset();
+            }else{
+                toast.add({severity:'error',summary:'Cards',detail:'The card save failed.',life:3000});
+            }
+        }
+    };
+    const update = async ()=>{
+        const {data:card} = await useFetch('/api/cards/process/update',{
+            method:'PUT',
+            body:model
+        });
+        if(card.value.error){
+            toast.add({severity:'error',summary:'Cards',detail:'An error has occurred.',life:3000});
+        }else{
+            if(card?.value.status){
+                toast.add({severity:'success',summary:'Cards',detail:'The card has been updated.',life:3000});
+                cardStore.updateCard(model);
+                emit('card_dialog_closed');
+
+            }else{
+                toast.add({severity:'error',summary:'Cards',detail:'The card update failed.',life:3000});
+            }
+        }
+
+    };
+
+    const deleted = async ()=>{
+        const {data:card} = await useFetch(`/api/cards/process/deleted/${model.ID}`,{
+            method:'DELETE'
+        }); 
+        if(card.value.error){
+            toast.add({severity:'error',summary:'Cards',detail:'An error has occurred.',life:3000});
+
+        }else{
+            if(card?.value.status){
+                toast.add({severity:'success',summary:'Cards',detail:'The card has been deleted.',life:3000});
+                cardStore.deleteCard(model.ID);
+                /*Socket IO */
+                const socket = new SocketConnection();
+                socket.socket?.emit('cards_list_updated_emit');
+                /*Socket IO */
+                emit('card_dialog_closed');
+            }else{
+                toast.add({severity:'error',summary:'Cards',detail:'The card delete failed.',life:3000});
+            };
+        }
+    };
+    if(!status){
+        selectedCategory.value = categories.find(x=>x.ID == model.KategoriID);
+        selectedProduct.value = products.find(x=>x.ID == model.UrunID);
+        selectedSurface.value = surfaces.find(x=>x.ID == model.YuzeyIslemID);
+        selectedWidth.value = sizes.find(x=>x.ID == model.OlcuID);
+        selectedHeight.value = sizes.find(x=>x.ID == model.OlcuID);
+        selectedThickness.value = sizes.find(x=>x.ID == model.OlcuID);
+    };
+    const reset = ()=>{
+        selectedCategory.value  = {}
+        selectedProduct.value  = {}
+        selectedSurface.value  = {}
+        selectedWidth.value  = {}
+        selectedHeight.value  = {}
+        selectedThickness.value  = {}
+    };
+
+
+
 
 </script>

@@ -10,10 +10,10 @@ export default defineEventHandler(async()=>{
                     o.En,
                     o.Boy,
                     o.Kenar,
-                    k.ID as KategoriId,
-                    u.ID as UrunId,
-                    yk.ID as YuzeyId,
-                    o.ID as OlcuId
+                    k.ID as KategoriID,
+                    u.ID as UrunID,
+                    yk.ID as YuzeyIslemID,
+                    o.ID as OlcuID
 
                 from UrunKartTB uk
                 inner join KategoriTB k on k.ID = uk.KategoriID

@@ -5,10 +5,8 @@
         </div>
     </div>
     <OrdersListProduction :orders="orders?.production"/>
-    <Dialog v-model:visible="order_visible_dialog" header="" modal :style="{ width: '90rem' }">
+    <Dialog v-model:visible="order_visible_dialog" :header="header" modal :style="{ width: '90rem' }" >
         <OrdersFormModel 
-                :model="model" 
-                :productModel="productModel"
                 :supplier="supplier" 
                 :unit="unit"
                 :delivery="delivery"
@@ -18,14 +16,20 @@
                 :customer="customer"
                 :user="user"
                 :po="po"
-                :productList="productList"
+                @product_model_reset_emit="productModelResetEmit"
+                @close_order_dialog_emit="closeOrderDialogEmit"
             />
 
     </Dialog>
 </template>
 <script setup lang="ts">
 import { useCardsStore } from '~/store/cards';
-const cardStore = useCardsStore();
+import { useModelsStore } from '~/store/models';
+import { useOrdersStore } from '~/store/orders';
+    const orderStore = useOrdersStore();
+
+    const cardStore = useCardsStore();
+    const modelsStore = useModelsStore();
     /*Socket IO */
     import SocketConnection from '@/io';
     const socket = new SocketConnection();
@@ -42,24 +46,8 @@ const cardStore = useCardsStore();
     /*Variables */
     const toast = useToast();
     const order_visible_dialog = ref(false);
-    let model = ref();
-    let productModel = ref();
-    let supplier = ref();
-    let unit = ref();
-    let delivery = ref();
-    let payment = ref();
-    let country = ref();
-    let invoice = ref();
-    let customer = ref();
-    let user = ref();
-    let po = ref();
-    let productList = ref([]);
-
-    /*Variables */
-
-    /*Function */
-    const newOrder = async ()=>{
-        model.value = {
+    let model = {
+            'ID':0,
             'SiparisNo':'',
             'SiparisTarihi':'',
             'OdemeTurID':0,
@@ -133,7 +121,24 @@ const cardStore = useCardsStore();
 
 
         }
-        productModel.value = {
+    let supplier = ref();
+    let unit = ref();
+    let delivery = ref();
+    let payment = ref();
+    let country = ref();
+    let invoice = ref();
+    let customer = ref();
+    let user = ref();
+    let po = ref();
+    let header = ref();
+
+    /*Variables */
+
+    /*Function */
+    const newOrder = async ()=>{
+        modelsStore.setOrderModel(model);
+        await modelsStore.setProductModel(
+            {
             'ID':0,
             'SiparisNo':'',
             'TedarikciID':0,
@@ -165,30 +170,79 @@ const cardStore = useCardsStore();
 
 
 
-        };
+            }
+        )
+
         const { data:shared } = await useFetch('/api/orders/form/shared');
         if(shared.value.error){
             toast.add({severity:'error',summary:'To Do',detail:'An error has occurred.',life:3000});
         }else{
             order_visible_dialog.value = true;
             supplier = shared.value.supplier;
-            unit = shared.value.unit
-            delivery = shared.value.delivery
-            payment = shared.value.payment
-            country = shared.value.country
-            invoice = shared.value.invoice
-            customer = shared.value.customer
-            user = shared.value.user
-            po = shared.value.po
+            unit = shared.value.unit;
+            delivery = shared.value.delivery;
+            payment = shared.value.payment;
+            country = shared.value.country;
+            invoice = shared.value.invoice;
+            customer = shared.value.customer;
+            user = shared.value.user;
+            po = shared.value.po;
+            orderStore.setProducts([]);
+            header.value = 'New Order';
+            orderStore.setNewButtonStatus(true);
 
         }
 
     };
+    const productModelResetEmit = ()=>{
+        modelsStore.setProductModel(
+            {
+            'ID':0,
+            'SiparisNo':'',
+            'TedarikciID':0,
+            'TedarikciAdi':0,
+            'UrunKartID':0,
+            'KategoriAdi':'',
+            'KategoriID':0,
+            'UrunAdi':'',
+            'UrunID':0,
+            'YuzeyIslemAdi':'',
+            'YuzeyIslemID':0,
+            'OlcuID':0,
+            'En':'',
+            'Boy':'',
+            'Kenar':'',
+            'UrunBirimID':0,
+            'UrunBirimAdi':'',
+            'Miktar':0,
+            'OzelMiktar':0,
+            'SatisFiyati':0,
+            'SatisToplam':0,
+            'UretimAciklama':'',
+            'MusteriAciklama':'',
+            'KullaniciID':0,
+            'AlisFiyati':0,
+            'SiraNo':0,
+            'Ton':0,
+            'Adet':0,
+            'Mt':0,
+            'M2':0
+
+
+
+            }
+        )
+    };
+    const closeOrderDialogEmit = ()=>{
+        order_visible_dialog.value = false;
+    };
+
+
     /*Function */
 
     /*Fetch */
     const { data:orders } = await useFetch('/api/orders/list/production');
-    if(orders.error){
+    if(orders.value.error){
         toast.add({ severity: 'error', summary: 'Loading', detail: 'failed', life: 3000 });
     };
 

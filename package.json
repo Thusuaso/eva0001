@@ -24,6 +24,7 @@
   "devDependencies": {
     "@primevue/nuxt-module": "^4.0.4",
     "@types/mssql": "^9.1.5",
+    "@vee-validate/nuxt": "^4.13.2",
     "usebootstrap": "^3.5.31"
   }
 }

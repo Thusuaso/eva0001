@@ -4,7 +4,12 @@ export default defineNuxtConfig({
   hooks:{},
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules:['@primevue/nuxt-module', 'usebootstrap', '@pinia/nuxt'],
+  modules:[
+    '@primevue/nuxt-module',
+    'usebootstrap',
+    '@pinia/nuxt',
+    '@vee-validate/nuxt'
+  ],
   plugins:[
     '~/plugins/format-price-usd.ts',
     '~/plugins/format-decimal.ts',

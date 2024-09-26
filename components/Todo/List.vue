@@ -3,14 +3,25 @@
                 v-model:selection="selectedTodo"
                 selectionMode="single"
                 @row-click="todoSelected($event)"
-                :sortField="['Acil']" :sortOrder="-1"
+                sortField="Acil" :sortOrder="-1"
                 :rowStyle="rowStyle"
+                v-model:filters="filters"
+                filterDisplay="row"
+
         >
-            <Column field="Yapilacak" header="Assignment" ></Column>
-            <Column field="GirisTarihi" header="Date">
+            <Column field="Yapilacak" header="Assignment" :showClearButton="false" :showFilterMenu="false" :showFilterOperator="false">
+                <template #filter="{ filterModel, filterCallback }">
+                    <InputText v-model="filterModel.value" type="text" @input="filterCallback()" />
+                </template>
+            </Column>
+            <Column field="GirisTarihi" header="Date" :showClearButton="false" :showFilterMenu="false" :showFilterOperator="false">
                 <template #body="slotProps">
                     {{ nuxtApp.$dts(slotProps.data.GirisTarihi) }}
-                </template>                    
+                </template>
+                
+                <template #filter="{ filterModel, filterCallback }">
+                    <InputText v-model="filterModel.value" type="text" @input="filterCallback()" />
+                </template>
             </Column>
             <Column field="YapilacakOncelik" header="Priority"></Column>
             <Column  header="#">
@@ -19,10 +30,13 @@
                 </template>
             </Column>
 
-        </DataTable>
+    </DataTable>
 </template>
 <script setup lang="ts">
-import { useTodoStore } from '~/store/todo';
+    import { useTodoStore } from '~/store/todo';
+    import { FilterMatchMode } from '@primevue/core/api';
+
+    /*Variables */
     const nuxtApp = useNuxtApp();
     const toast = useToast();
     const todoStore = useTodoStore();
@@ -35,6 +49,14 @@ import { useTodoStore } from '~/store/todo';
     });
     const { list } = props;
     const emit = defineEmits(["todo_selected_emit"]);
+    const filters = ref({
+        Yapilacak:{value:null,matchMode:FilterMatchMode.CONTAINS},
+        GirisTarihi:{value:null,matchMode:FilterMatchMode.STARTS_WITH},
+
+    })
+    /*Variables */
+
+    /*Functions */
     const todoSelected =  (event:any)=>{
         emit('todo_selected_emit',event.data);
     };
@@ -51,10 +73,16 @@ import { useTodoStore } from '~/store/todo';
             if(todo.value.status){
                 toast.add({severity:'success',summary:'To Do',detail:'Task completed.',life:3000});
                 todoStore.deleteTodo(id);
+                todoStore.deleteTodoMain(id);
             }else{
                 toast.add({severity:'success',summary:'To Do',detail:'Task Completion Failed.',life:3000});
             };
         }
     };
+
+    /*Functions */
+
+
+
 
 </script>

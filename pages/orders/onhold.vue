@@ -1,10 +1,14 @@
 <template>
-    <OrdersListProduction :orders="orders?.onhold"/>
+    <OrdersListProduction />
 </template>
 <script setup lang="ts">
+    import { useOrdersStore } from '~/store/orders';
     const toast = useToast();
+    const orderStore = useOrdersStore();
     const { data:orders } = await useFetch('/api/orders/list/onhold');
-    if(orders.error){
-        toast.add({ severity: 'error', summary: 'Loading', detail: 'failed', life: 3000 });
-    }
+    if(orders.value.error){
+        toast.add({severity:'error',summary:'Orders',detail:'An error has occurred.',life:3000});
+    }else{
+        orderStore.setProductionOrders(orders?.value.onhold)
+    };
 </script>

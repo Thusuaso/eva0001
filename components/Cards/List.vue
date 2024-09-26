@@ -1,5 +1,5 @@
 <template>
-    <DataTable :value="cards" paginator :rows="20" tableStyle="min-width: 50rem"
+    <DataTable :value="cardStore.getCardList" paginator :rows="20" tableStyle="min-width: 50rem"
       v-model:filters="filters"
       filterDisplay="row"
       selectionMode="single"
@@ -51,14 +51,8 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import {FilterMatchMode} from '@primevue/core/api';
-const props = defineProps({
-    cards:{
-        type:Array,
-        required:true
-    }
-});
-const { cards } = props;
-
+import { useCardsStore } from '~/store/cards';
+const cardStore = useCardsStore();
 const filters = ref({
     ID: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     KategoriAdi: { value: null, matchMode: FilterMatchMode.STARTS_WITH },

@@ -2,20 +2,22 @@ import { defineStore } from 'pinia';
 export const useOrdersStore = defineStore('orders',{
     state: ()=>{
         return {
-            orders:[],
+            productionOrders:[],
             products:[],
             new_button_status:ref(false),
             orderTotalTable:{
                 'product':0,
                 'freight':0,
-                'other':0,
-                'total':0
-            }
+                'total':0,
+                'detail_1':0,
+                'detail_2':0
+            },
+            orders_cost:[]
         }
     },
     actions:{
-        setOrders(orders:any){
-            this.orders = orders;
+        setProductionOrders(orders:any){
+            this.productionOrders = orders;
         },
         setProducts(products:any){
             this.products = products;
@@ -26,7 +28,7 @@ export const useOrdersStore = defineStore('orders',{
             this.setOrderSumProductTable(this.products);
         },
         updateProduct(product:Object){
-            const index = this.products.findIndex(item=>item.id === product.id);
+            const index = this.products.findIndex(item=>item.ID === product.ID);
             if(index > -1){
                 this.products.splice(index,1,product);
             };
@@ -34,7 +36,7 @@ export const useOrdersStore = defineStore('orders',{
 
         },
         deleteProduct(id:any){
-            const index = this.products.findIndex(item=>item.id === id);
+            const index = this.products.findIndex(item=>item.ID === id);
             if(index > -1){
                 this.products.splice(index,1);
             };
@@ -53,13 +55,19 @@ export const useOrdersStore = defineStore('orders',{
         setOrderSumFreight(freight:any){
           this.orderTotalTable.freight = freight;
         },
-        setOrderSumOther(detail_1:any,detail_2:any,detail_3:any){
-            this.orderTotalTable.other = (detail_1 + detail_2 + detail_3);
+        setOrderSumOther_1(detail_1:any){
+            this.orderTotalTable.detail_1 = detail_1;
+        },
+        setOrderSumOther_2(detail_2:any){
+            this.orderTotalTable.detail_2 = detail_2;
+        },
+        setOrdersCost(list:any){
+            this.orders_cost = list;
         }
     },
     getters:{
-        getOrders(state){
-            return state.orders;
+        getProductionOrders(state){
+            return state.productionOrders;
         },
         getProducts(state){
             return state.products;
@@ -69,6 +77,9 @@ export const useOrdersStore = defineStore('orders',{
         },
         getOrderTotalTable(state){
             return state.orderTotalTable;
+        },
+        getOrdersCost(state){
+            return state.orders_cost;
         }
     }
 })

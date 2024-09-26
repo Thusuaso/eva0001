@@ -4,7 +4,7 @@
             <Button type="button" class="p-button-success w-100" label="Add Order" @click="newOrder"/>
         </div>
     </div>
-    <OrdersListProduction :orders="orders?.production"/>
+    <OrdersListProduction @order_production_selected_emit="orderProductionSelectedEmit($event)"/>
     <Dialog v-model:visible="order_visible_dialog" :header="header" modal :style="{ width: '90rem' }" >
         <OrdersFormModel 
                 :supplier="supplier" 
@@ -26,27 +26,34 @@
 import { useCardsStore } from '~/store/cards';
 import { useModelsStore } from '~/store/models';
 import { useOrdersStore } from '~/store/orders';
-    const orderStore = useOrdersStore();
-
-    const cardStore = useCardsStore();
-    const modelsStore = useModelsStore();
-    /*Socket IO */
-    import SocketConnection from '@/io';
-    const socket = new SocketConnection();
-    socket.socket?.on('cards_list_updated_on',async ()=>{
-        const { data:cards } = await useFetch('/api/cards/list');
-        if(cards?.value?.error){
-            toast.add({severity:'error',summary:'To Do',detail:'An error has occurred.',life:3000});
-        }else{
-            await cardStore.setCardList(cards?.value?.list);
-        };
-    });
-    /*Socket IO */
+import { onMounted } from 'vue';
+import SocketConnection from '@/io';
 
     /*Variables */
+    const orderStore = useOrdersStore();
+    const cardStore = useCardsStore();
+    const modelsStore = useModelsStore();
+    const socket = new SocketConnection();
     const toast = useToast();
     const order_visible_dialog = ref(false);
-    let model = {
+    
+    let supplier = ref();
+    let unit = ref();
+    let delivery = ref();
+    let payment = ref();
+    let country = ref();
+    let invoice = ref();
+    let customer = ref();
+    let user = ref();
+    let po = ref();
+    let header = ref();
+
+    /*Variables */
+
+    /*Function */
+    const newOrder = async ()=>{
+        modelsStore.setOrderModel(
+            {
             'ID':0,
             'SiparisNo':'',
             'SiparisTarihi':'',
@@ -121,22 +128,8 @@ import { useOrdersStore } from '~/store/orders';
 
 
         }
-    let supplier = ref();
-    let unit = ref();
-    let delivery = ref();
-    let payment = ref();
-    let country = ref();
-    let invoice = ref();
-    let customer = ref();
-    let user = ref();
-    let po = ref();
-    let header = ref();
 
-    /*Variables */
-
-    /*Function */
-    const newOrder = async ()=>{
-        modelsStore.setOrderModel(model);
+        );
         await modelsStore.setProductModel(
             {
             'ID':0,
@@ -171,11 +164,11 @@ import { useOrdersStore } from '~/store/orders';
 
 
             }
-        )
+        );
 
         const { data:shared } = await useFetch('/api/orders/form/shared');
         if(shared.value.error){
-            toast.add({severity:'error',summary:'To Do',detail:'An error has occurred.',life:3000});
+            toast.add({severity:'error',summary:'Orders',detail:'An error has occurred.',life:3000});
         }else{
             order_visible_dialog.value = true;
             supplier = shared.value.supplier;
@@ -190,8 +183,11 @@ import { useOrdersStore } from '~/store/orders';
             orderStore.setProducts([]);
             header.value = 'New Order';
             orderStore.setNewButtonStatus(true);
+            orderStore.setOrderSumFreight(0);
+            orderStore.setOrderSumOther_1(0);
+            orderStore.setOrderSumOther_2(0);
 
-        }
+        };
 
     };
     const productModelResetEmit = ()=>{
@@ -236,19 +232,110 @@ import { useOrdersStore } from '~/store/orders';
     const closeOrderDialogEmit = ()=>{
         order_visible_dialog.value = false;
     };
+    const orderProductionSelectedEmit = async (event:any)=>{
+        const { data:shared } = await useFetch('/api/orders/form/shared');
+        if(shared.value.error){
+            toast.add({severity:'error',summary:'Orders',detail:'An error has occurred.',life:3000});
+        }else{
+            supplier = shared.value.supplier;
+            unit = shared.value.unit;
+            delivery = shared.value.delivery;
+            payment = shared.value.payment;
+            country = shared.value.country;
+            invoice = shared.value.invoice;
+            customer = shared.value.customer;
+            user = shared.value.user;
+            po = shared.value.po;
+            header.value = event.SiparisNo;
+            orderStore.setNewButtonStatus(false);
+            await modelsStore.setOrderModel(
+                event
+            );
+            await modelsStore.setProductModel(
+            {
+            'ID':0,
+            'SiparisNo':'',
+            'TedarikciID':0,
+            'TedarikciAdi':0,
+            'UrunKartID':0,
+            'KategoriAdi':'',
+            'KategoriID':0,
+            'UrunAdi':'',
+            'UrunID':0,
+            'YuzeyIslemAdi':'',
+            'YuzeyIslemID':0,
+            'OlcuID':0,
+            'En':'',
+            'Boy':'',
+            'Kenar':'',
+            'UrunBirimID':0,
+            'UrunBirimAdi':'',
+            'Miktar':0,
+            'OzelMiktar':0,
+            'SatisFiyati':0,
+            'SatisToplam':0,
+            'UretimAciklama':'',
+            'MusteriAciklama':'',
+            'KullaniciID':0,
+            'AlisFiyati':0,
+            'SiraNo':0,
+            'Ton':0,
+            'Adet':0
 
+
+
+            }
+            );
+            order_visible_dialog.value = true;
+            orderStore.setOrderSumFreight(modelsStore.getOrderModel.NavlunSatis);
+            orderStore.setOrderSumOther_1(modelsStore.getOrderModel.DetayTutar_1);
+            orderStore.setOrderSumOther_2(modelsStore.getOrderModel.DetayTutar_2);
+
+
+
+        };
+
+
+    };
 
     /*Function */
 
     /*Fetch */
     const { data:orders } = await useFetch('/api/orders/list/production');
     if(orders.value.error){
-        toast.add({ severity: 'error', summary: 'Loading', detail: 'failed', life: 3000 });
+        toast.add({severity:'error',summary:'Orders',detail:'An error has occurred.',life:3000});
+
+    }else{
+        orderStore.setProductionOrders(orders?.value.production)
     };
 
 
 
     /*Fetch */
+
+    onMounted(()=>{
+            /*Socket IO */
+            socket.socket?.on('cards_list_updated_on',async ()=>{
+                const { data:cards } = await useFetch('/api/cards/list');
+                if(cards?.value?.error){
+                    toast.add({severity:'error',summary:'Cards',detail:'An error has occurred.',life:3000});
+                }else{
+                    await cardStore.setCardList(cards?.value?.list);
+                };
+            });
+
+            socket.socket?.on('order_production_list_updated_on',async()=>{
+                const { data:orders } = await useFetch('/api/orders/list/production');
+                if(orders.value.error){
+                    toast.add({ severity: 'error', summary: 'Orders', detail: 'An error has occurred.', life: 3000 });
+                }else{
+                    orderStore.setProductionOrders(orders?.value.production);
+                }
+            });
+
+
+            /*Socket IO */
+    })
 
     
 

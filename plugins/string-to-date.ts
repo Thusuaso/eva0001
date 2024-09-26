@@ -1,5 +1,6 @@
 export default defineNuxtPlugin((nuxtApp)=>{
     nuxtApp.provide('std',(value:any)=>{
+
         if (value == null || value == NaN-NaN-NaN || value == 'NaN-NaN-NaN' || value == undefined || value == "") {
             return "";
         } else {

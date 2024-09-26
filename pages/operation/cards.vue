@@ -1,6 +1,6 @@
 <template>
     <Button type="button" class="p-button-info w-100" label="New Card" @click="newCardForm" />
-    <CardsList :cards="cardList" @selected_card_emit="cardSelectedEmit($event)"/>
+    <CardsList @selected_card_emit="cardSelectedEmit($event)"/>
     <Dialog v-model:visible="card_visible_dialog" :header="cardHeader" modal :style="{ width: '45rem' }">
         <CardsForm :model="model" :status="newCardStatus"
             :categories="categories"
@@ -24,7 +24,6 @@
         await cardStore.setCardList(cards?.value?.list);
 
     };
-    const cardList = cardStore.getCardList;
     let card_visible_dialog = ref(false);
     let model = ref({
 

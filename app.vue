@@ -1,7 +1,7 @@
 <template>
   <Toast />
   <SharedNavbar :menu="menu" v-if="authStore.isAuthenticated"/>
-  <div class="container mt-4">
+  <div class=" mt-4">
     <NuxtLayout>
       <NuxtPage/>
     </NuxtLayout>
@@ -38,6 +38,53 @@ const menu = [
 
         ]
     },
+    {
+      label:'Sales',
+      items:[
+        {
+          label:'Main To Do',
+          url:'/sales/todo/main'
+        },
+        {
+          label:'To Do',
+          url:'/sales/todo/all'
+        },
+        {
+          label:'Sales & Operation',
+          url:'/sales/representative'
+        },
+        {
+          label:'Customer Notes',
+          url:'/sales/customer-notes'
+        },
+        {
+          label:'BGP Projects',
+          url:'/sales/bgp'
+        },
+        {
+          label:'Points to Consider',
+          url:'/sales/points-of-consider'
+        },
+        {
+          label:'Passwords',
+          url:'/sales/passwords'
+        }
+      ]
+    },
+    {
+      label:'Selection',
+      items:[
+        {
+          label:'Entry',
+          url:'/selection/entry'
+        },
+        {
+          label:'Crate Size',
+          url:'/selection/size'
+        },
+      ]
+    },
+
     {
       label:'Operation',
       items:[

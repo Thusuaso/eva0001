@@ -1,6 +1,6 @@
 <template>
     <DataTable 
-        :value="orders" 
+        :value="orderStore.getProductionOrders" 
         rowGroupMode="rowspan" 
         :groupRowsBy="['SiparisTarihi', 'SiparisNo', 'FirmaAdi', 'PI']" 
         :sortOrder="-1" 
@@ -8,6 +8,9 @@
         v-model:filters="filters"
         :globalFilterFields="['SiparisTarihi','SiparisNo', 'FirmaAdi', 'UrunAdi', 'UrunUretimAciklama', 'En', 'Boy', 'Kenar','UrunFirmaAdi']"
         filterDisplay="row"
+        v-model:selection="selectedProductionOrder"
+        selectionMode="single"
+        @row-click="orderProductionSelected($event)"
     >
         <template #header>
                 <div class="flex justify-end">
@@ -21,7 +24,7 @@
         </template>
         <Column field="SiparisTarihi" header="O. Date" style="min-width: 80px" :showClearButton="false" :showFilterMenu="false" :showFilterOperator="false">
           <template #body="slotProps">
-            {{ slotProps.data.SiparisTarihi }}
+            {{ nuxtApp.$dtsa(slotProps.data.SiparisTarihi) }}
           </template>
           <template #filter="{ filterModel, filterCallback }">
               <InputText class="w-100" v-model="filterModel.value" type="text" @input="filterCallback()"  />
@@ -122,14 +125,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-const props = defineProps({
-    orders:{
-        type:Array,
-        required:true
-    }
-});
-const { orders } = props;
+import { useOrdersStore } from '~/store/orders';
+/*Variables */
+const orderStore = useOrdersStore();
 const nuxtApp = useNuxtApp();
+const toast = useToast();
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     SiparisTarihi: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -148,4 +148,25 @@ const filters = ref({
 
 
 });
+const selectedProductionOrder = ref();
+const emit = defineEmits(['order_production_selected_emit'])
+/*Variables */
+
+/*Function*/
+const orderProductionSelected = async(event:any)=>{
+  const { data:products } = await useFetch(`/api/orders/process/product/list/${event.data.SiparisNo}`);
+  if(products.value.error){
+    toast.add({severity:'error',summary:'Products',detail:'An error has occurred.',life:3000});
+  }else{
+    if(products.value.status){
+      orderStore.setProducts(products.value.list);
+    }else{
+      toast.add({severity:'error',summary:'Products',detail:'An error has occurred.',life:3000});
+    }
+  }
+  await emit('order_production_selected_emit',event.data);
+};
+/*Function*/
+
+
 </script>

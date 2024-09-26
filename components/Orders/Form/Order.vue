@@ -38,13 +38,13 @@
             <div class="row mb-4">
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputNumber id="purchase-price" v-model="modelsStore.getProductModel.AlisFiyati" :minFractionDigits="4" inputId="currency-us" mode="currency" currency="USD" locale="en-US" fluid :disabled="productInputDisabled"/>
+                        <InputNumber id="purchase-price" v-model="modelsStore.getProductModel.AlisFiyati" :minFractionDigits="2" inputId="currency-us" mode="currency" currency="USD" locale="en-US" fluid :disabled="productInputDisabled"/>
                         <label for="purchase-price">Purchase Price</label>
                     </FloatLabel>
                 </div>
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputNumber id="sale-price" v-model="modelsStore.getProductModel.SatisFiyati" :minFractionDigits="4" inputId="currency-us" mode="currency" currency="USD" locale="en-US" fluid :disabled="productInputDisabled"/>
+                        <InputNumber id="sale-price" v-model="modelsStore.getProductModel.SatisFiyati" :minFractionDigits="2" inputId="currency-us" mode="currency" currency="USD" locale="en-US" fluid :disabled="productInputDisabled"/>
                         <label for="sale-price">Sale Price</label>
                     </FloatLabel>
                 </div>
@@ -58,13 +58,15 @@
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel class="w-100">
-                        <InputNumber id="amount" v-model="modelsStore.getProductModel.Miktar" inputId="locale-us" locale="en-US" :minFractionDigits="4" fluid :disabled="productInputDisabled"/>
+                        <InputNumber id="amount" v-model="modelsStore.getProductModel.Miktar" inputId="locale-us" locale="en-US" :minFractionDigits="2" fluid :disabled="product_unit_input_disabled"
+                            @input="calculateAmountInput($event)"
+                        />
                         <label for="amount">Amount</label>
                     </FloatLabel>
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel class="w-100">
-                        <InputNumber id="piece" v-model="modelsStore.getProductModel.Adet" inputId="locale-us" locale="en-US" :minFractionDigits="4" fluid :disabled="productInputDisabled"/>
+                        <InputNumber id="piece" v-model="modelsStore.getProductModel.Adet" inputId="locale-us" locale="en-US" :minFractionDigits="2" fluid :disabled="product_unit_input_disabled"/>
                         <label for="piece">Piece</label>
                     </FloatLabel>
                 </div>
@@ -79,13 +81,13 @@
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel class="w-100">
-                        <InputNumber id="m2" v-model="modelsStore.getProductModel.OzelMiktar" inputId="locale-us" locale="en-US" :minFractionDigits="4" fluid :disabled="productInputDisabled"/>
+                        <InputNumber id="m2" v-model="modelsStore.getProductModel.OzelMiktar" inputId="locale-us" locale="en-US" :minFractionDigits="2" fluid :disabled="product_unit_input_disabled"/>
                         <label for="m2">M2</label>
                     </FloatLabel>
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel class="w-100">
-                        <InputNumber id="ton" v-model="modelsStore.getProductModel.Ton" inputId="locale-us" locale="en-US" :minFractionDigits="4" fluid :disabled="productInputDisabled"/>
+                        <InputNumber id="ton" v-model="modelsStore.getProductModel.Ton" inputId="locale-us" locale="en-US" :minFractionDigits="2" fluid :disabled="product_unit_input_disabled"/>
                         <label for="ton">Ton</label>
                     </FloatLabel>
                 </div>
@@ -170,18 +172,19 @@
 
 
     <Dialog v-model:visible="card_visible_dialog" header="" modal :style="{ width: '50rem' }">
-        <CardsList :cards="cardList" @selected_card_emit="selectedCardEmit($event)"/>
+        <CardsList @selected_card_emit="selectedCardEmit($event)"/>
     </Dialog>
 </template>
 <script setup lang="ts">
 import { useModelsStore } from '~/store/models';
 import { useOrdersStore } from '~/store/orders';
-
+import { useCardsStore } from '~/store/cards';
 
 /*Variables */
 const nuxtApp = useNuxtApp();
 const modelsStore = useModelsStore();
 const orderStore = useOrdersStore();
+const cardStore = useCardsStore();
 const toast = useToast();
 const emit = defineEmits(['product_model_reset_emit'])
 const props = defineProps({
@@ -214,6 +217,7 @@ let product_add_disabled = ref(true);
 let product_updated_disabled = ref(true);
 let product_deleted_disabled = ref(true);
 let product_new_disabled = ref(false);
+let product_unit_input_disabled = ref(true);
 
 /*Variables */
 
@@ -222,7 +226,7 @@ let product_new_disabled = ref(false);
 /*Function */
 const openCards = async ()=>{
     const { data:cards } = await useFetch('/api/cards/list');
-    cardList.value = cards.value.list;
+    cardStore.setCardList(cards.value.list);
     card_visible_dialog.value = true;
 };
 const selectedCardEmit = async(event:any)=>{
@@ -263,11 +267,12 @@ const searchSupplier = (event:any)=>{
 }
 const supplierSelected = (event:any)=>{
     modelsStore.getProductModel.TedarikciAdi = event.value.FirmaAdi;
-    modelsStore.getProductModel.TedarikciId = event.value.ID;
+    modelsStore.getProductModel.TedarikciID = event.value.ID;
 };
 const unitSelected = (event:any)=>{
     modelsStore.getProductModel.UrunBirimID = event.value.ID;
     modelsStore.getProductModel.UrunBirimAdi = event.value.BirimAdi;
+    product_unit_input_disabled.value = false;
 
 };
 const newForm = ()=>{
@@ -309,28 +314,60 @@ const reset =  ()=>{
     selectedUnit.value = null;
     productInputDisabled.value = true;
     selectedProduct.value = null;
+    product_unit_input_disabled.value = true;
 
 
 } 
 
 const updated = async ()=>{
     modelsStore.getProductModel.SatisToplam = await (parseFloat(modelsStore.getProductModel.SatisFiyati) * parseFloat(modelsStore.getProductModel.Miktar));
-    await orderStore.updateProduct(modelsStore.getProductModel);
-    reset();
-    product_add_disabled.value = true;
-    product_new_disabled.value = false;
-    product_updated_disabled.value = true;
-    product_deleted_disabled.value = true;
+    
+    const { data:product }= await useFetch('/api/orders/process/product/update',{
+        method:'PUT',
+        body:modelsStore.getProductModel
+    });
+    if(product.value.error){
+        toast.add({severity:'error',summary:'Products',detail:'An error has occurred.',life:3000});
+    }else{
+        if(product.value.status){
+            toast.add({severity:'success',summary:'Products',detail:'Product updated successfully.',life:3000});
+            await orderStore.updateProduct(modelsStore.getProductModel);
+            reset();
+            product_add_disabled.value = true;
+            product_new_disabled.value = false;
+            product_updated_disabled.value = true;
+            product_deleted_disabled.value = true;
+        }else{
+            toast.add({severity:'error',summary:'Products',detail:'Product updated unsuccessfully.',life:3000});
+        }
+    }
+    
+    
+
 
 };
 
 const deleted = async ()=>{
-    await orderStore.deleteProduct(modelsStore.getProductModel.ID);
-    reset();
-    product_add_disabled.value = true;
-    product_new_disabled.value = false;
-    product_updated_disabled.value = true;
-    product_deleted_disabled.value = true;
+    const {data:product} = await useFetch(`/api/orders/process/product/delete/${modelsStore.getProductModel.ID}`,{
+        method:'DELETE'
+    });
+    if(product.value.error){
+        toast.add({severity:'error',summary:'Products',detail:'An error has occurred.',life:3000});
+    }else{
+        if(product.value.status){
+            toast.add({severity:'success',summary:'Products',detail:'Product deleted successfully.',life:3000});
+            await orderStore.deleteProduct(modelsStore.getProductModel.ID);
+            reset();
+            product_add_disabled.value = true;
+            product_new_disabled.value = false;
+            product_updated_disabled.value = true;
+            product_deleted_disabled.value = true;
+        }else{
+            toast.add({severity:'error',summary:'Products',detail:'Product deleted unsuccessfully.',life:3000});
+        }
+    }
+
+
 
 };
 const productSelected = (event:any)=>{
@@ -339,6 +376,7 @@ const productSelected = (event:any)=>{
     product.value = event.data.UrunAdi;
     surface.value = event.data.YuzeyIslemAdi;
     size.value = event.data.MusteriAciklama;
+    modelsStore.getProductModel.ID = event.data.ID;
     modelsStore.getProductModel.UrunKartID = event.data.UrunKartID;
     modelsStore.getProductModel.KategoriAdi = event.data.KategoriAdi;
     modelsStore.getProductModel.UrunAdi = event.data.UrunAdi;
@@ -352,10 +390,13 @@ const productSelected = (event:any)=>{
     modelsStore.getProductModel.OlcuID = event.data.OlcuID;
     modelsStore.getProductModel.MusteriAciklama = event.data.MusteriAciklama;
     modelsStore.getProductModel.UretimAciklama = event.data.UretimAciklama;
-
+    modelsStore.getProductModel.TedarikciID = event.data.TedarikciID;
+    modelsStore.getProductModel.TedarikciAdi = event.data.TedarikciAdi;
+    modelsStore.getProductModel.UrunBirimID = event.data.UrunBirimID;
+    modelsStore.getProductModel.UrunBirimAdi = event.data.UrunBirimAdi;
     
     selectedSupplier.value = supplier.find(x=>{
-        return x.ID = event.data.TedarikciId;
+        return x.ID = event.data.TedarikciID;
     });
     modelsStore.getProductModel.AlisFiyati = event.data.AlisFiyati;
     modelsStore.getProductModel.SatisFiyati = event.data.SatisFiyati;
@@ -374,7 +415,64 @@ const productSelected = (event:any)=>{
     product_updated_disabled.value = false;
     product_deleted_disabled.value = false;
     productInputDisabled.value = false;
+    product_unit_input_disabled.value = false;
 
+}
+
+const calculateAmountInput = (event:any)=>{
+
+    if(selectedUnit.value.ID == 1){
+        modelsStore.getProductModel.OzelMiktar = event.value;
+        _calculatePiece(modelsStore.getProductModel.En,modelsStore.getProductModel.Boy,event.value,modelsStore.getProductModel.Kenar,modelsStore.getProductModel.KategoriAdi);
+    }else if(selectedUnit.value.ID == 2){
+        modelsStore.getProductModel.Adet = event.value;
+        _calculateM2(modelsStore.getProductModel.En,modelsStore.getProductModel.Boy,event.value,modelsStore.getProductModel.Kenar,modelsStore.getProductModel.KategoriAdi);
+    }
+};
+
+const _calculatePiece = (w:any,h:any,value:any,t:any,c:any)=>{
+    if(w == 'VAR' || w == 'Various' || w == 'ANT' || w == 'SLAB' || w == 'MINI' || h == 'SET' || h == 'Set' || h == 'PAT' || h == 'Free' || h == 'FREE' ){
+        console.log('');
+    }else{
+        const width = w.replace(',','.');
+        const height = h.replace(',','.');
+        const newValue = Math.round(value / ( width / 100 ) / ( height / 100 ));
+        modelsStore.getProductModel.Adet = newValue;
+        _calculateTon(t,c,value);
+        
+    }
+};
+const _calculateM2 = (w:any,h:any,value:any,t:any,c:any) =>{
+    if(w == 'VAR' || w == 'Various' || w == 'ANT' || w == 'SLAB' || w == 'MINI' || h == 'SET' || h == 'Set' || h == 'PAT' || h == 'Free' || h == 'FREE' ){
+        console.log('');
+    }else{
+        const width = w.replace(',','.');
+        const height = h.replace(',','.');
+        const newValue = value * ( width / 100 ) * ( height / 100 );
+        modelsStore.getProductModel.OzelMiktar = newValue;
+        _calculateTon(t,c,newValue);
+        
+    }
+};
+const _calculateTon = (t:any,c:any,value:any) =>{
+    const coefficient = __stoneCoefficient(c);
+    const thickness = t.replace(',','.');
+    const newValue = (value * coefficient * thickness * 10);
+    modelsStore.getProductModel.Ton = newValue;
+};
+const __stoneCoefficient = (c:any)=>{
+    const _category = c.split(' ')[0];
+    if( _category == 'Travertine'){
+        return 2.35;
+    }else if ( _category == 'Marble'){
+        return 2.75;
+    } else if ( _category == 'Limestone'){
+        return 2.6;
+    } else if (_category == 'Quartz'){
+        return 2.5;
+    }else{
+        return 0;
+    }
 }
 
 

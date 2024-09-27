@@ -81,7 +81,7 @@
     </div>
 
     <Dialog v-model:visible="selection_entry_form_dialog" :header="selection_entry_header" modal :style="{width:'85rem'}">
-        <SelectionEntryForm :model="model" :status="selection_new_button_status"
+        <SelectionEntryForm :model="store.getModel" :status="selection_new_button_status"
             :po="sharedStore.getOpenPo" 
             :quarries="sharedStore.getQuarries"
             :suppliers="sharedStore.getSuppliers"
@@ -112,7 +112,6 @@
     let selection_entry_form_dialog = ref(false);
     let selection_entry_header = ref('Add Crate');
     let selection_new_button_status = ref(false);
-    let model = ref();
     let efeLabels = ref(
         [
         {
@@ -178,7 +177,7 @@
         selection_entry_form_dialog.value = true;
         selection_entry_header.value = 'Add Crate';
         selection_new_button_status.value = true;
-        model.value = {
+        store.setModel({
             ID:0,
             Tarih:'',
             KasaNo:0,
@@ -217,7 +216,7 @@
             KasaAdedi:1,
             SqmMiktar:0,
             UrunDurumID:1
-        };
+        });
     };
     const mekmerStocks = async ()=>{
         await store.setList(store.getMekmerList)
@@ -324,16 +323,14 @@
     };*/
 
     const selectedProductEmit = (event:any) =>{
-        model.value = event;
+        store.setModel(event);
         selection_new_button_status.value = false;
         selection_entry_form_dialog.value = true;
         selection_entry_header.value = 'Edit Product ' + event.KasaNo;
     };
     const process = async (event:any)=>{
         if(selection_new_button_status.value){
-            for(let i = 0; i < event.KasaAdedi;i++){
-                save(event);
-            }           
+            save(event);
         }else{
             update(event);
         };
@@ -348,11 +345,52 @@
                 toast.add({severity:'error',summary:'Selection',detail:'An error has occurred.',life:3000});
             }else{
                 if(product.value.status){
+                    await __getSelectionList();
+                    store.setModel({
+            ID:0,
+            Tarih:'',
+            KasaNo:0,
+            UrunKartID:0,
+            KategoriAdi:'',
+            KategoriID:0,
+            OcakAdi:'',
+            OcakId:0,
+            UrunAdi:'',
+            UrunId:0,
+            YuzeyIslemAdi:'',
+            YuzeyId:0,
+            OlcuId:0,
+            En:'',
+            Boy:'',
+            Kenar:'',
+            KutuAdet:0,
+            KutuIciAdet:0,
+            Miktar:0,
+            Kutu:false,
+            Bagli:false,
+            SiparisAciklama:'',
+            Aciklama:'',
+            TedarikciID:0,
+            FirmaAdi:'',
+            Bulunamadi:false,
+            Disarda:false,
+            Adet:0,
+            OzelMiktar:0,
+            Duzenleyen:'Muhsin',
+            Kasalayan:'Emre',
+            UrunBirimId:0,
+            UrunBirimAdi:'',
+            UretimTurID:0,
+            OlcuAdi:'',
+            KasaAdedi:1,
+            SqmMiktar:0,
+            UrunDurumID:1
+                    });
+
                     toast.add({severity:'success',summary:'Selection',detail:'Saved successfully.',life:3000});
-                    store.addProduct({...event,'ID':product.value.id});
                 }else{
                     toast.add({severity:'error',summary:'Selection',detail:'Saved unsuccessfully.',life:3000});
-                }
+                };
             }
 
 
@@ -387,4 +425,30 @@
         }
 
     };  
+
+    const __getSelectionList = async ()=>{
+        const { data:selection } = await useFetch('/api/selection/entry/list',{
+        method:'GET'
+    });
+    if(selection?.value?.error){
+        toast.add({severity:'error',summary:'Selection',detail:'An error has occurred.',life:3000});
+    }else{
+        await store.setSelectionList(selection?.value?.list);
+        await store.setSumTotalTable(selection?.value?.sumTable);
+        selectionList.value = store.getMekmerList;
+        selectionTotalList.value = {
+            'crate':0,
+            'piece':0,
+            'amount':0,
+            'box':0
+        };
+        selectionTotalList.value.crate = selectionList.value.length;
+        await selectionList.value.forEach(x=>{
+            selectionTotalList.value.piece += x.Adet;
+            selectionTotalList.value.amount += x.Miktar;
+            selectionTotalList.value.box += x.KutuAdet;
+        });
+        store.setListTotal(selectionTotalList.value);
+    };
+    };
 </script>

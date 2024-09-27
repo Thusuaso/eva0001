@@ -290,7 +290,7 @@
     let filteredPo = ref();
     const toast = useToast();
     let productsList = ref();
-    const selectedDate = ref(new Date());
+    let selectedDate = ref(new Date());
     const nuxtApp = useNuxtApp();
     let po_dropdown_disabled = ref(true);
     let product_dropdown_disabled = ref(true);
@@ -528,16 +528,27 @@
     };
 
     const process = async ()=>{
-        model.KasaAdedi = await +crate_amount;
+        model.KasaAdedi = crate_amount;
         if(status){
-            emits('process_product_emit',model);
+            await emits('process_product_emit',model);
+            reset();
         }else{
 
         }
     };
     const deleted = ()=>{
         emits('deleted_product_emit',model.ID);
-    }
+    };
+    const reset = ()=>{
+        selectedSupplier.value = null;
+        selectedPo.value = null;
+        selectedDate = ref(new Date());
+        selectedProducts.value = null;
+        selectedQuarry.value = null;
+        selectedUnit.value = 'Sqm';
+        po_dropdown_disabled.value = false;
+        product_dropdown_disabled.value = false;
+    };
 
 
 

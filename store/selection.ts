@@ -9,7 +9,8 @@ export const useSelectionStore = defineStore('selection',{
             dis_list:ref(),
             not_found_list:ref(),
             sumTotalTable:ref(),
-            listTotal:ref()
+            listTotal:ref(),
+            model:ref(),
         }
     },
     actions:{
@@ -43,6 +44,9 @@ export const useSelectionStore = defineStore('selection',{
             if(index > -1){
                 this.list.splice(index,1);
             }
+        },
+        setModel(model:any){
+            this.model = model;
         }
 
     },
@@ -67,6 +71,9 @@ export const useSelectionStore = defineStore('selection',{
         },
         getListTotal(state){
             return state.listTotal;
+        },
+        getModel(state){
+            return state.model;
         }
     }
 });

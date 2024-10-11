@@ -91,6 +91,30 @@ const menu = [
         {
           label:'Product Data',
           url:'/operation/cards'
+        },
+        {
+          label:'Suppliers',
+          url:'/operation/suppliers'
+        },
+        {
+          label:'Dispatch',
+          url:'/operation/dispatch'
+        },
+        {
+          label:'Shipment Form',
+          url:'/operation/shipment-form',
+        },
+        {
+          label:'Container Tracking',
+          url:'/operation/container-tracking',
+        },
+        {
+          label:'Shipped Container',
+          url:'/operation/container-shipped',
+        },
+        {
+          label:'Shipment Cost',
+          url:'/operation/shipment-cost',
         }
       ]
     }

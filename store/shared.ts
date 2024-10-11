@@ -7,7 +7,8 @@ export const useSharedStore = defineStore('shared',{
             openPo:ref([]),
             suppliers:ref([]),
             quarries:ref([]),
-            cards:ref([])
+            cards:ref([]),
+            company:ref([]),
         }
     },
     actions:{
@@ -25,6 +26,9 @@ export const useSharedStore = defineStore('shared',{
         },
         setCards(cards:any){
             this.cards = cards;
+        },
+        setCompany(company:any){
+            this.company = company;
         }
     },
     getters:{
@@ -42,6 +46,9 @@ export const useSharedStore = defineStore('shared',{
         },
         getCards(state){
             return state.cards;
+        },
+        getCompany(state){
+            return state.company;
         }
     }
     

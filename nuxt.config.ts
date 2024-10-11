@@ -8,8 +8,10 @@ export default defineNuxtConfig({
     '@primevue/nuxt-module',
     'usebootstrap',
     '@pinia/nuxt',
-    '@vee-validate/nuxt'
+    '@vee-validate/nuxt',
+    '@formkit/auto-animate',
   ],
+
   plugins:[
     '~/plugins/format-price-usd.ts',
     '~/plugins/format-decimal.ts',
@@ -26,6 +28,6 @@ export default defineNuxtConfig({
     },
     css:['~/assets/css/default.css','primeicons/primeicons.css'],
     "overrides": {
-  "vue": "latest"
-}
+      "vue": "latest"
+    }
 })

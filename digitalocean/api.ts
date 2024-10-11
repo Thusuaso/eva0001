@@ -1,0 +1,108 @@
+import AWS from "aws-sdk";
+const spaceEndPoint = new AWS.Endpoint("https://fra1.digitaloceanspaces.com");
+const s3 = new AWS.S3({
+  endpoint: spaceEndPoint,
+  accessKeyId: "B7POIPPYM44Y374P23KS",
+  secretAccessKey: "01CMWBcNKtFgKG6XhP+q0PlajTb2yvELaJ1igo7xsyA",
+});
+
+const oceanservice = {
+    panelUsaProductUploadPhoto(file:any) {
+        const filename = file.name;
+        const params = {
+            Bucket: "mekmar-image",
+            Key: "usa-products/" + filename,
+            Body: file,
+            ACL: "public-read",
+            ContentType: "image/" + filename.split(".")[1],
+            CacheControl: "public,max-age=1,s-max-age=500,must-revalidate",
+        };
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err:any, data:any) => {
+                if (err) reject(false);
+                else resolve(true);
+            });
+        });
+
+    },
+    panelProductSendPhoto(file:any) {
+        const filename = file.name;
+        const params = {
+            Bucket: "mekmar-image",
+            Key: "products/" + filename,
+            Body: file,
+            ACL: "public-read",
+            ContentType: "image/" + filename.split(".")[1],
+            CacheControl: "public,max-age=1,s-max-age=500,must-revalidate",
+        };
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err:any, data:any) => {
+                if (err) reject(false);
+                else resolve(true);
+            });
+        });
+
+    },
+    panelProductPhotoDelete(filename:any) {
+        const params = {
+            Bucket: "mekmar-image",
+            Key: "products/" + filename,
+        };
+        return new Promise((resolve, reject) => {
+            s3.deleteObject(params, (err:any, data:any) => {
+                if (err) reject(false);
+                else resolve(true);
+            });
+        });
+    },
+    panelProductSendTestReport(file:any) {
+        const filename = file.name;
+        const params = {
+            Bucket: "mekmar-image",
+            Key: "test-reports/" + filename,
+            Body: file,
+            ACL: "public-read",
+            CacheControl: "public,max-age=1,s-max-age=500,must-revalidate",
+        };
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err:any, data:any) => {
+                if (err) reject(false);
+                else resolve(true);
+            });
+        });
+
+    },
+    panelProjectProductSendPhoto(file:any) {
+        const filename = file.name;
+        const params = {
+            Bucket: "mekmar-image",
+            Key: "galleria-project_photos/photos/" + filename,
+            Body: file,
+            ACL: "public-read",
+            CacheControl: "public,max-age=1,s-max-age=500,must-revalidate",
+        };
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err:any, data:any) => {
+                if (err) reject(false);
+                else resolve(true);
+            });
+        });
+    },
+    panelProjectSendPhoto(file:any) {
+        const filename = file.name;
+        const params = {
+            Bucket: "mekmar-image",
+            Key: "galleria-project_photos/" + filename,
+            Body: file,
+            ACL: "public-read",
+            CacheControl: "public,max-age=1,s-max-age=500,must-revalidate",
+        };
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err:any, data:any) => {
+                if (err) reject(false);
+                else resolve(true);
+            });
+        });
+    },
+};
+export default oceanservice;

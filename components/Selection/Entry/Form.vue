@@ -25,14 +25,14 @@
             <div class="row m-auto text-center">
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="category" v-model="model.KategoriAdi" disabled class="w-100"/>
+                        <InputText id="category" v-model="selectionStore.getModel.KategoriAdi" disabled class="w-100"/>
                         <label for="category">Category</label>
                     </FloatLabel>
 
                 </div>
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="product" v-model="model.UrunAdi" disabled class="w-100"/>
+                        <InputText id="product" v-model="selectionStore.getModel.UrunAdi" disabled class="w-100"/>
                         <label for="product">Products</label>
                     </FloatLabel>
                 </div>
@@ -67,14 +67,14 @@
             <div class="row m-auto text-center">
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="surface" v-model="model.YuzeyIslemAdi" disabled class="w-100"/>
+                        <InputText id="surface" v-model="selectionStore.getModel.YuzeyIslemAdi" disabled class="w-100"/>
                         <label for="surface">Surface</label>
                     </FloatLabel>
 
                 </div>
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="size" v-model="model.OlcuAdi" disabled class="w-100"/>
+                        <InputText id="size" v-model="selectionStore.getModel.OlcuAdi" disabled class="w-100"/>
                         <label for="size">Size</label>
                     </FloatLabel>
                 </div>
@@ -115,7 +115,7 @@
             <div class="row ">
                 <div class="col-sm-9">
                     <FloatLabel class="w-100">
-                        <InputText id="product_card_id" v-model="model.UrunKartID" :disabled="true" class="w-100"/>
+                        <InputText id="product_card_id" v-model="selectionStore.getModel.UrunKartID" :disabled="true" class="w-100"/>
                         <label for="product_card_id">Card Id</label>
                     </FloatLabel>
                 </div>
@@ -130,19 +130,19 @@
             <div class="row m-auto text-center">
                 <div class="col-sm-4">
                     <FloatLabel>
-                        <InputText id="box-amount" v-model="model.KutuAdet" class="w-100"/>
+                        <InputText id="box-amount" v-model="selectionStore.getModel.KutuAdet" class="w-100"/>
                         <label for="box-amount">Box</label>
                     </FloatLabel>
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel>
-                        <InputText id="box-in-amount" v-model="model.KutuIciAdet" class="w-100"/>
+                        <InputText id="box-in-amount" v-model="selectionStore.getModel.KutuIciAdet" class="w-100"/>
                         <label for="box-in-amount">Box In</label>
                     </FloatLabel>
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel>
-                        <InputText id="total-piece" v-model="model.Adet" class="w-100"/>
+                        <InputText id="total-piece" v-model="selectionStore.getModel.Adet" class="w-100"/>
                         <label for="total-piece">Pieces</label>
                     </FloatLabel>
                 </div>
@@ -152,13 +152,13 @@
             <div class="row m-auto text-center mt-4">
                 <div class="col-sm-4">
                     <FloatLabel>
-                        <InputText id="amount" v-model="model.Miktar" class="w-100"/>
+                        <InputText id="amount" v-model="selectionStore.getModel.Miktar" class="w-100"/>
                         <label for="amount">Amount</label>
                     </FloatLabel>
                 </div>
                 <div class="col-sm-4">
                     <FloatLabel>
-                        <InputText id="o-sqm" v-model="model.SqmMiktar" class="w-100"/>
+                        <InputText id="o-sqm" v-model="selectionStore.getModel.SqmMiktar" class="w-100"/>
                         <label for="o-sqm">Sqm</label>
                     </FloatLabel>
                 </div>
@@ -172,19 +172,19 @@
             </div>
             <div class=" row m-auto text-center mt-1">
                 <div class="col-sm-3">
-                    <Checkbox v-model="model.Kutu" inputId="box" :binary="true" />
+                    <Checkbox v-model="selectionStore.getModel.Kutu" inputId="box" :binary="true" />
                     <label for="box" > Box </label>
                 </div>
                 <div class="col-sm-3">
-                    <Checkbox v-model="model.Bagli" inputId="binded" :binary="true" />
+                    <Checkbox v-model="selectionStore.getModel.Bagli" inputId="binded" :binary="true" />
                     <label for="binded" > Bind </label>
                 </div>
                 <div class="col-sm-3">
-                    <Checkbox v-model="model.Disarda" inputId="out" :binary="true" />
+                    <Checkbox v-model="selectionStore.getModel.Disarda" inputId="out" :binary="true" />
                     <label for="out" > Out </label>
                 </div>
                 <div class="col-sm-3">
-                    <Checkbox v-model="model.Bulunamadi" inputId="not_found" :binary="true" />
+                    <Checkbox v-model="selectionStore.getModel.Bulunamadi" inputId="not_found" :binary="true" />
                     <label for="not_found" > Not </label>
                 </div>
             </div>
@@ -199,7 +199,7 @@
             <div class="row m-auto text-center mt-4">
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="crate_no" v-model="model.KasaNo" disabled class="w-100"/>
+                        <InputText id="crate_no" v-model="selectionStore.getModel.KasaNo" disabled class="w-100"/>
                         <label for="crate_no">C. No</label>
                     </FloatLabel>
                 </div>
@@ -218,14 +218,14 @@
             <div class="row m-auto text-center mt-4">
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="controlled_by" v-model="model.Duzenleyen"  class="w-100"/>
+                        <InputText id="controlled_by" v-model="selectionStore.getModel.Duzenleyen"  class="w-100"/>
                         <label for="controlled_by">Controlled By</label>
                     </FloatLabel>
 
                 </div>
                 <div class="col-sm-6">
                     <FloatLabel>
-                        <InputText id="created_by" v-model="model.Kasalayan"  class="w-100"/>
+                        <InputText id="created_by" v-model="selectionStore.getModel.Kasalayan"  class="w-100"/>
                         <label for="created_by">Created By</label>
                     </FloatLabel>
                 </div>
@@ -233,7 +233,7 @@
         </div>
         <div class="col-sm-4">
 
-                <Textarea v-model="model.Aciklama" rows="5" cols="30" class="w-100"/>
+                <Textarea v-model="selectionStore.getModel.Aciklama" rows="5" cols="30" class="w-100"/>
         </div>
         <div class="col-sm-4">
 
@@ -257,6 +257,7 @@
 </template>
 
 <script setup lang="ts">
+    import { useSelectionStore } from '~/store/selection';
     const props = defineProps({
         model:{
             type:Array,
@@ -284,6 +285,7 @@
         }
     });
     const { model,status,po,quarries,suppliers,cards } = props;
+    const selectionStore= useSelectionStore();
     const selectedSupplier = ref();
     let filteredSuppliers = ref();
     const selectedPo = ref();
@@ -416,8 +418,11 @@
         filteredPo.value = res;
     };
     const poSelected = async (event:Object)=>{
-        const { data:products } = await useFetch(`/api/shared/products/${event.value.SiparisNo}`,{
-            method: 'GET'
+        const { data:products } = await useFetch(`/api/shared/products/po`,{
+            method: 'POST',
+            body:{
+                po:event.value.SiparisNo
+            }
         });
         if(products.value.error){
             toast.add({severity:'error',summary:'Selection',detail:'An error has occurred.',life:3000});
@@ -519,7 +524,12 @@
             selectedPo.value = null;
             selectedProducts.value == null;
         }else{
-            const {data:products} = await useFetch(`/api/shared/products/all/${model.SiparisAciklama}`);
+            const { data:products } = await useFetch(`/api/shared/products/all`,{
+                method:"POST",
+                body:{
+                    po:model.SiparisAciklama
+                }
+            });
             productsList.value = products.value.list;
             selectedPo.value = po.find(x=>x.SiparisNo.toLowerCase() === model.SiparisAciklama.toLowerCase());
             selectedProducts.value = products.value.list.find(x=>x.UrunKartID === model.UrunKartID);
@@ -533,7 +543,7 @@
             await emits('process_product_emit',model);
             reset();
         }else{
-
+            await emits('process_product_emit',model);
         }
     };
     const deleted = ()=>{
@@ -548,6 +558,9 @@
         selectedUnit.value = 'Sqm';
         po_dropdown_disabled.value = false;
         product_dropdown_disabled.value = false;
+        crate_amount = 1;
+        selectedKindofSave.value = null;
+        selectedUnit.value = null;
     };
 
 

@@ -1,7 +1,7 @@
 import mssql from '~/mssql/api';
 
 export default defineEventHandler(async (event)=>{
-    const po = await getRouterParam(event,'po');
+    const body = await readBody(event);
     const getProductsSql = `
         select su.ID,su.UrunBirimID,s.SiparisNo,uk.ID as UrunKartID,k.KategoriAdi,ur.UrunAdi,yk.YuzeyIslemAdi,ol.En,ol.Boy,ol.Kenar,su.TedarikciID,(t.FirmaAdi + '/' + k.KategoriAdi + '/' + ur.UrunAdi + '/' + yk.YuzeyIslemAdi + '/' + ol.En + 'x' + ol.Boy + 'x' + ol.Kenar) as Aciklama from SiparislerTB s
                 inner join SiparisUrunTB su on su.SiparisNo = s.SiparisNo
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event)=>{
                 inner join OlculerTB ol on ol.ID = uk.OlcuID
                 inner join TedarikciTB t on t.ID = su.TedarikciID
                 
-                where s.SiparisDurumID=2 and dbo.Production_Total_Control_Fk(s.SiparisNo,su.UrunKartID) < su.Miktar and  s.SiparisNo='${po}'
+                where s.SiparisDurumID in (1,2) and s.SiparisNo='${body.po}'
     `;
     return new Promise(async(resolve,reject)=>{
         await mssql.query(getProductsSql,(err:any,products)=>{

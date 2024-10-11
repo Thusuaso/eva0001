@@ -14,7 +14,6 @@ SET
 	Miktar='${body.Miktar}',
 	Aciklama='${body.Aciklama}',
 	UretimTurID='${body.UretimTurID}',
-	UrunDurumID='${body.UrunDurumID}',
 	SiparisAciklama='${body.SiparisAciklama}',
 	Kutu='${body.Kutu}',
 	Duzenleyen='${body.Duzenleyen}',

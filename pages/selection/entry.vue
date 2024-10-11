@@ -138,9 +138,13 @@
 
 
     )
-    const { data:selection } = await useFetch('/api/selection/entry/list',{
-        method:'GET'
-    });
+    // const { data:selection } = await useFetch('/api/selection/entry/list',{
+    //     method:'GET'
+    // });
+
+    const { data:selection } = await useFetch('/api/selection/entry/list');
+
+
     if(selection?.value?.error){
         toast.add({severity:'error',summary:'Selection',detail:'An error has occurred.',life:3000});
     }else{
@@ -209,7 +213,7 @@
             OzelMiktar:0,
             Duzenleyen:'Muhsin',
             Kasalayan:'Emre',
-            UrunBirimId:0,
+            UrunBirimID:0,
             UrunBirimAdi:'',
             UretimTurID:0,
             OlcuAdi:'',
@@ -347,7 +351,7 @@
                 if(product.value.status){
                     await __getSelectionList();
                     store.setModel({
-            ID:0,
+                        ID:0,
             Tarih:'',
             KasaNo:0,
             UrunKartID:0,
@@ -378,7 +382,7 @@
             OzelMiktar:0,
             Duzenleyen:'Muhsin',
             Kasalayan:'Emre',
-            UrunBirimId:0,
+            UrunBirimID:0,
             UrunBirimAdi:'',
             UretimTurID:0,
             OlcuAdi:'',
@@ -396,7 +400,10 @@
 
     };
     const update = async (event:any)=>{
-        const {data:product} = await useFetch('/');
+        const {data:product} = await useFetch('/api/selection/entry/process/update',{
+            method:'PUT',
+            body:event
+        });
         if(product.value.error){
             toast.add({severity:'error',summary:'Selection',detail:'An error has occurred.',life:3000});
         }else{
